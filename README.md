@@ -2,7 +2,7 @@
 
 `naberius` is a middleware of multi-provider authentication for web applications in Go. It's inspired by [omnioauth](https://github.com/omniauth/omniauth).
 
-![Naberius](https://user-images.githubusercontent.com/605953/159140834-b9937306-64a6-4c67-8e91-3abffba05e86.png)
+![naberius](https://user-images.githubusercontent.com/605953/159142806-bc91da6c-c81a-4644-ac77-c905b1c78513.jpg)
 
 `naberius` provides HTTP middleware as `func(http.Handler) http.Handler` and it's compatible with major web application frameworks in Go.
 
