@@ -2,24 +2,21 @@ package omniauth
 
 import "net/http"
 
+// Policy is function to determine if a request is allowed. `true` of returned value means "allowed". Default policy is "denied".
 type Policy func(r *http.Request, u *User) bool
 type Policies []Policy
 
-func (x Policies) denied(r *http.Request, u *User) bool {
-	// If no policy, default is all access permitted
-	if len(x) == 0 {
-		return false
-	}
-
+func (x Policies) allowed(r *http.Request, u *User) bool {
 	for _, policy := range x {
 		if policy(r, u) {
-			return false
+			return true
 		}
 	}
 
-	return true
+	return false
 }
 
+// WithPolicy sets policy to decide if user can access. If no policy, all accesses are denied.
 func WithPolicy(policies ...Policy) Option {
 	return func(n *OmniAuth) error {
 		n.policies = append(n.policies, policies...)
@@ -27,7 +24,15 @@ func WithPolicy(policies ...Policy) Option {
 	}
 }
 
-func AllowedEmailsPolicy(emailAddrs []string) Policy {
+// AllowedAll is access policy and always returns true (allowed).
+func AllowedAll() Policy {
+	return func(r *http.Request, u *User) bool {
+		return true
+	}
+}
+
+// AllowedEmailsPolicy is access policy and returns true if email is matched in list.
+func AllowedEmails(emailAddrs []string) Policy {
 	return func(r *http.Request, u *User) bool {
 		if u.Email.IsEmpty() {
 			return false

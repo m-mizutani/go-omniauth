@@ -27,6 +27,12 @@ func main() {
 			os.Getenv("JWT_SECRET"),
 			time.Hour*24,
 		),
+		omniauth.WithPolicy(
+			omniauth.AllowedEmails([]string{
+				"blue@example.com",
+				"orange@example.com",
+			}),
+		),
 	))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {

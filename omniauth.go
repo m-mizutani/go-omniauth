@@ -10,6 +10,7 @@ import (
 	"github.com/m-mizutani/goerr"
 )
 
+// OmniAuth is main structure of go-omniauth. It's configurable by *New* method and *Option*.
 type OmniAuth struct {
 	google   *googleOAuth2
 	policies Policies
@@ -26,7 +27,7 @@ func New(options ...Option) func(http.Handler) http.Handler {
 	return n
 }
 
-// NewWithError
+// NewWithError provides initialized OmniAuth middleware.
 func NewWithError(options ...Option) (func(http.Handler) http.Handler, error) {
 	n := &OmniAuth{
 		jwt: newJwtHandler(randomToken(32), tokenSecret(randomToken(32)), time.Hour*24),
@@ -41,14 +42,14 @@ func NewWithError(options ...Option) (func(http.Handler) http.Handler, error) {
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			n.Auth(w, r, next)
+			n.auth(w, r, next)
 		})
 	}, nil
 }
 
 type Option func(n *OmniAuth) error
 
-func (x *OmniAuth) Auth(w http.ResponseWriter, r *http.Request, next http.Handler) {
+func (x *OmniAuth) auth(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	var user *User
 	if cookie := lookupCookie(r.Cookies(), cookieTokenName); cookie != nil {
 		claims, err := x.jwt.verifyToken(sessionToken(cookie.Value), x.now())
@@ -72,20 +73,11 @@ func (x *OmniAuth) Auth(w http.ResponseWriter, r *http.Request, next http.Handle
 	}
 
 	// not authenticated
-	if user != nil {
-		x.passThrough(w, r, next, user)
+	if user == nil {
+		x.accessDenied(w)
 		return
 	}
 
-	x.accessDenied(w)
-}
-
-func (x *OmniAuth) accessDenied(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusUnauthorized)
-	w.Write([]byte("<html><body><h1>Access denied</h1></body></html>"))
-}
-
-func (x *OmniAuth) passThrough(w http.ResponseWriter, r *http.Request, next http.Handler, user *User) {
 	token, err := x.jwt.signToken(user, x.now())
 	if err != nil {
 		handleError(w, err)
@@ -100,7 +92,16 @@ func (x *OmniAuth) passThrough(w http.ResponseWriter, r *http.Request, next http
 		Path:     "/",
 	})
 
-	if x.policies.denied(r, user) {
+	x.passThrough(w, r, next, user)
+}
+
+func (x *OmniAuth) accessDenied(w http.ResponseWriter) {
+	w.WriteHeader(http.StatusUnauthorized)
+	w.Write([]byte("<html><body><h1>Access denied</h1></body></html>"))
+}
+
+func (x *OmniAuth) passThrough(w http.ResponseWriter, r *http.Request, next http.Handler, user *User) {
+	if !x.policies.allowed(r, user) {
 		x.accessDenied(w)
 		return
 	}

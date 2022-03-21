@@ -17,9 +17,9 @@ type httpClient interface {
 }
 
 type oauth2 interface {
-	AuthURI(authURI URI, scopes []string) URI
-	GetToken(ctx context.Context, tokenURI URI, code oauth2Code) (*oauth2AccessToken, error)
-	GetUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error
+	authURI(authURI URI, scopes []string) URI
+	getToken(ctx context.Context, uri URI, code oauth2Code) (*oauth2AccessToken, error)
+	getUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error
 }
 
 type oauth2AccessToken struct {
@@ -49,7 +49,7 @@ func newOAuth2(clientID oauth2ClientID, clientSecret oauth2ClientSecret, callbac
 	}
 }
 
-func (x *oauth2Client) AuthURI(authURI URI, scopes []string) URI {
+func (x *oauth2Client) authURI(authURI URI, scopes []string) URI {
 	q := &url.Values{}
 	q.Add("client_id", string(x.clientID))
 	q.Add("redirect_uri", string(x.callbackURI))
@@ -59,7 +59,7 @@ func (x *oauth2Client) AuthURI(authURI URI, scopes []string) URI {
 	return authURI + URI("?"+q.Encode())
 }
 
-func (x *oauth2Client) GetToken(ctx context.Context, uri URI, code oauth2Code) (*oauth2AccessToken, error) {
+func (x *oauth2Client) getToken(ctx context.Context, uri URI, code oauth2Code) (*oauth2AccessToken, error) {
 	body := &url.Values{}
 	body.Add("grant_type", "authorization_code")
 	body.Add("code", string(code))
@@ -93,7 +93,7 @@ func (x *oauth2Client) GetToken(ctx context.Context, uri URI, code oauth2Code) (
 	return &token, nil
 }
 
-func (x *oauth2Client) GetUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error {
+func (x *oauth2Client) getUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(uri), nil)
 	if err != nil {
 		return goerr.Wrap(err)

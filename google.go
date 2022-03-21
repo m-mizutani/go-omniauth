@@ -93,7 +93,7 @@ func (x *googleOAuth2) redirectToAuthEndpoint(w http.ResponseWriter, r *http.Req
 		googleOAuthScopeUserProfile,
 	}
 
-	w.Header().Add("Location", string(x.oauth2Client.AuthURI(googleAuthEndpoint, scopes)))
+	w.Header().Add("Location", string(x.oauth2Client.authURI(googleAuthEndpoint, scopes)))
 	w.WriteHeader(http.StatusFound)
 	w.Write([]byte("redirect to google auth endpoint"))
 }
@@ -105,7 +105,7 @@ func (x *googleOAuth2) callback(w http.ResponseWriter, r *http.Request) (*User, 
 	}
 
 	ctx := r.Context()
-	accessToken, err := x.oauth2Client.GetToken(ctx, googleTokenEndpoint, oauth2Code(code))
+	accessToken, err := x.oauth2Client.getToken(ctx, googleTokenEndpoint, oauth2Code(code))
 	if err != nil {
 		return nil, err
 	}

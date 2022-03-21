@@ -30,6 +30,7 @@ func main() {
 			os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 			os.Getenv("GOOGLE_OAUTH_CLIENT_CALLBACK_URI"),
 		),
+		omniauth.WithPolicy(omniauth.AllowedAll()),
 	))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
