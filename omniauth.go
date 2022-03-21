@@ -50,7 +50,7 @@ type Option func(n *OmniAuth) error
 
 func (x *OmniAuth) Auth(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	var user *User
-	if cookie := lookupCookie(r.Cookies(), CookieTokenName); cookie != nil {
+	if cookie := lookupCookie(r.Cookies(), cookieTokenName); cookie != nil {
 		claims, err := x.jwt.verifyToken(sessionToken(cookie.Value), x.now())
 		if err != nil {
 			handleError(w, err)
@@ -93,7 +93,7 @@ func (x *OmniAuth) passThrough(w http.ResponseWriter, r *http.Request, next http
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     CookieTokenName,
+		Name:     cookieTokenName,
 		Value:    token,
 		Secure:   true,
 		HttpOnly: true,
@@ -106,9 +106,9 @@ func (x *OmniAuth) passThrough(w http.ResponseWriter, r *http.Request, next http
 	}
 
 	ctx := context.WithValue(r.Context(), CtxUserKey, user)
-	if cookie := lookupCookie(r.Cookies(), CookieCallback); cookie != nil && cookie.Value != "" {
+	if cookie := lookupCookie(r.Cookies(), cookieCallback); cookie != nil && cookie.Value != "" {
 		http.SetCookie(w, &http.Cookie{
-			Name:     CookieCallback,
+			Name:     cookieCallback,
 			Value:    "",
 			MaxAge:   0,
 			Secure:   true,

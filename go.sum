@@ -31,6 +31,8 @@ github.com/m-mizutani/goerr v0.1.4 h1:Wsga0Rl4RH/I0INDbEjWj9RxhQjvMXKN45/n0A1vSr
 github.com/m-mizutani/goerr v0.1.4/go.mod h1:j3cf1KSIhehhIY38cCdbixepJ2LQBpJdIQ3G8pbVUiY=
 github.com/m-mizutani/zlog v0.2.0 h1:TICsdVtosp9vHdS0fw7UApCdrKx8L4dqkOf2uFHb0jM=
 github.com/m-mizutani/zlog v0.2.0/go.mod h1:efppDLVhoHSRyq7ozaSW34gjr+gx6Ls0x2HkBqulx6k=
+github.com/m-mizutani/zlog v0.2.1-0.20220321001402-a254c012b31f h1:LINRdDbY6OJHxy+VrUV+rbO78xxPXe2KF8ST501hvz0=
+github.com/m-mizutani/zlog v0.2.1-0.20220321001402-a254c012b31f/go.mod h1:efppDLVhoHSRyq7ozaSW34gjr+gx6Ls0x2HkBqulx6k=
 github.com/mattn/go-colorable v0.1.11 h1:nQ+aFkoE2TMGc0b68U2OKSexC+eq46+XwZzWXHRmPYs=
 github.com/mattn/go-colorable v0.1.11/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=
 github.com/mattn/go-isatty v0.0.14 h1:yVuAays6BHfxijgZPzw+3Zlu5yQgKGP2/hcQbHb7S9Y=

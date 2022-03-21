@@ -18,8 +18,8 @@ type httpClient interface {
 
 type oauth2 interface {
 	AuthURI(authURI URI, scopes []string) URI
-	GetToken(ctx context.Context, tokenURI URI, code OAuth2Code) (*oauth2AccessToken, error)
-	GetUserInfo(ctx context.Context, uri URI, accessToken AccessToken, out interface{}) error
+	GetToken(ctx context.Context, tokenURI URI, code oauth2Code) (*oauth2AccessToken, error)
+	GetUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error
 }
 
 type oauth2AccessToken struct {
@@ -32,14 +32,14 @@ type oauth2AccessToken struct {
 }
 
 type oauth2Client struct {
-	clientID     OAuth2ClientID
-	clientSecret OAuth2ClientSecret
+	clientID     oauth2ClientID
+	clientSecret oauth2ClientSecret
 	callbackURI  URI
 
 	httpClient httpClient
 }
 
-func newOAuth2(clientID OAuth2ClientID, clientSecret OAuth2ClientSecret, callbackURI URI) *oauth2Client {
+func newOAuth2(clientID oauth2ClientID, clientSecret oauth2ClientSecret, callbackURI URI) *oauth2Client {
 	return &oauth2Client{
 		clientID:     clientID,
 		clientSecret: clientSecret,
@@ -59,7 +59,7 @@ func (x *oauth2Client) AuthURI(authURI URI, scopes []string) URI {
 	return authURI + URI("?"+q.Encode())
 }
 
-func (x *oauth2Client) GetToken(ctx context.Context, uri URI, code OAuth2Code) (*oauth2AccessToken, error) {
+func (x *oauth2Client) GetToken(ctx context.Context, uri URI, code oauth2Code) (*oauth2AccessToken, error) {
 	body := &url.Values{}
 	body.Add("grant_type", "authorization_code")
 	body.Add("code", string(code))
@@ -93,7 +93,7 @@ func (x *oauth2Client) GetToken(ctx context.Context, uri URI, code OAuth2Code) (
 	return &token, nil
 }
 
-func (x *oauth2Client) GetUserInfo(ctx context.Context, uri URI, accessToken AccessToken, out interface{}) error {
+func (x *oauth2Client) GetUserInfo(ctx context.Context, uri URI, accessToken accessToken, out interface{}) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, string(uri), nil)
 	if err != nil {
 		return goerr.Wrap(err)

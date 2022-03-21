@@ -12,21 +12,23 @@ type (
 	sessionToken string
 	tokenSecret  string
 
-	OAuth2Code         string
-	OAuth2ClientID     string
-	OAuth2ClientSecret string
+	oauth2Code         string
+	oauth2ClientID     string
+	oauth2ClientSecret string
 	URI                string
 	emailAddress       string
 	authProvider       string
 
-	AccessToken string
-	IDToken     string
+	accessToken string
 )
 
 const (
-	CtxUserKey      omniauthContextKey = "omniauth_user"
-	CookieTokenName                    = "omniauth_token"
-	CookieCallback                     = "omniauth_callback"
+	CtxUserKey omniauthContextKey = "omniauth_user"
+
+	cookieTokenName string = "omniauth_token"
+	cookieCallback  string = "omniauth_callback"
+
+	googleOAuth2Provider authProvider = "google"
 )
 
 type User struct {
@@ -36,14 +38,14 @@ type User struct {
 	Email    emailAddress
 }
 
-func (x OAuth2ClientID) Validate() error {
+func (x oauth2ClientID) Validate() error {
 	if err := validation.Validate(string(x), validation.Required); err != nil {
 		return goerr.Wrap(err, "ClientID")
 	}
 	return nil
 }
 
-func (x OAuth2ClientSecret) Validate() error {
+func (x oauth2ClientSecret) Validate() error {
 	if err := validation.Validate(string(x), validation.Required); err != nil {
 		return goerr.Wrap(err, "ClientSecret")
 	}
@@ -65,7 +67,3 @@ func (x emailAddress) Validate() error {
 }
 
 func (x emailAddress) IsEmpty() bool { return x == "" }
-
-const (
-	googleOAuth2Provider authProvider = "google"
-)

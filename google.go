@@ -45,8 +45,8 @@ func WithGoogleOAuth2(clientID, clientSecret, callback string) Option {
 
 		g := &googleOAuth2{
 			oauth2Client: newOAuth2(
-				OAuth2ClientID(clientID),
-				OAuth2ClientSecret(clientSecret),
+				oauth2ClientID(clientID),
+				oauth2ClientSecret(clientSecret),
 				URI(callback),
 			),
 			callbackPath: uri.Path,
@@ -62,15 +62,12 @@ func WithGoogleOAuth2(clientID, clientSecret, callback string) Option {
 }
 
 const (
-	cookieGoogleAccessToken = "google_access_token"
-	cookieGoogleIDToken     = "google_id_token"
-
 	googleAuthEndpoint     URI = "https://accounts.google.com/o/oauth2/auth"
 	googleTokenEndpoint    URI = "https://oauth2.googleapis.com/token"
 	googleUserInfoEndpoint URI = "https://openidconnect.googleapis.com/v1/userinfo"
 
-	oauthScopeUserEmail   = "https://www.googleapis.com/auth/userinfo.email"
-	oauthScopeUserProfile = "https://www.googleapis.com/auth/userinfo.profile"
+	googleOAuthScopeUserEmail   = "https://www.googleapis.com/auth/userinfo.email"
+	googleOAuthScopeUserProfile = "https://www.googleapis.com/auth/userinfo.profile"
 )
 
 func (x *googleOAuth2) Auth(w http.ResponseWriter, r *http.Request) (*User, error) {
@@ -79,7 +76,7 @@ func (x *googleOAuth2) Auth(w http.ResponseWriter, r *http.Request) (*User, erro
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     CookieCallback,
+		Name:     cookieCallback,
 		Value:    r.URL.Path,
 		Secure:   true,
 		HttpOnly: true,
@@ -92,8 +89,8 @@ func (x *googleOAuth2) Auth(w http.ResponseWriter, r *http.Request) (*User, erro
 
 func (x *googleOAuth2) redirectToAuthEndpoint(w http.ResponseWriter, r *http.Request) {
 	scopes := []string{
-		oauthScopeUserEmail,
-		oauthScopeUserProfile,
+		googleOAuthScopeUserEmail,
+		googleOAuthScopeUserProfile,
 	}
 
 	w.Header().Add("Location", string(x.oauth2Client.AuthURI(googleAuthEndpoint, scopes)))
@@ -108,7 +105,7 @@ func (x *googleOAuth2) callback(w http.ResponseWriter, r *http.Request) (*User, 
 	}
 
 	ctx := r.Context()
-	accessToken, err := x.oauth2Client.GetToken(ctx, googleTokenEndpoint, OAuth2Code(code))
+	accessToken, err := x.oauth2Client.GetToken(ctx, googleTokenEndpoint, oauth2Code(code))
 	if err != nil {
 		return nil, err
 	}

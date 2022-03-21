@@ -9,11 +9,26 @@ import (
 	"math/rand"
 
 	"github.com/m-mizutani/zlog"
+	"github.com/m-mizutani/zlog/filter"
 )
 
 var random *rand.Rand
 
-var logger = zlog.New()
+var logger = zlog.New(
+	zlog.WithFilters(
+		filter.Type(sessionToken("")),
+		filter.Type(tokenSecret("")),
+		filter.Type(oauth2Code("")),
+		filter.Type(oauth2ClientSecret("")),
+		filter.Type(accessToken("")),
+	),
+	zlog.WithLogLevel("fatal"),
+)
+
+// WithLogLevel sets log level from [trace|debug|info|warn|error|fatal] for debugging. Default log level is *fatal*. Log level is process wide.
+func WithLogLevel(level string) {
+	logger = logger.Clone(zlog.WithLogLevel(level))
+}
 
 func init() {
 	seed, err := cryptoRand.Int(cryptoRand.Reader, big.NewInt(math.MaxInt64))

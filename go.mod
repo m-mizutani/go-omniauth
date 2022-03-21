@@ -8,7 +8,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/golang-jwt/jwt/v4 v4.4.0
 	github.com/m-mizutani/goerr v0.1.4
-	github.com/m-mizutani/zlog v0.2.0
+	github.com/m-mizutani/zlog v0.2.1-0.20220321001402-a254c012b31f
 )
 
 require (
